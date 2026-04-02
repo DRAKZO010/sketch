@@ -429,18 +429,38 @@ async function callGroq(systemPrompt, userPrompt) {
 // ══════════════════════════════════════
 
 function init() {
+  console.log("Initializing Sketch...");
   const now = new Date();
-  document.getElementById('todayDate').textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-  document.getElementById('footerQuote').textContent = footerQuotes[Math.floor(Math.random() * footerQuotes.length)];
+  
+  const dateEl = document.getElementById('todayDate');
+  if (dateEl) dateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  
+  const quoteEl = document.getElementById('footerQuote');
+  if (quoteEl && footerQuotes && footerQuotes.length > 0) {
+    const randomQuote = footerQuotes[Math.floor(Math.random() * footerQuotes.length)];
+    quoteEl.textContent = randomQuote;
+    console.log("Quote set:", randomQuote);
+  }
+  
   renderStreak();
   renderChallengeBadge();
+  
   if (activeChallenge && challengeNotifyEnabled && Notification.permission === 'granted') {
     scheduleNotifications();
   }
+  
   if (!apiKey) {
     setTimeout(() => toggleSettings(true), 1000);
   }
 }
+
+// Ensure init runs after DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+
 
 function renderStreak() {
   const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -882,4 +902,4 @@ async function askAI() {
   }
 }
 
-init();
+// Removed standalone init call to prevent double initialization with DOMContentLoaded
