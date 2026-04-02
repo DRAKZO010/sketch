@@ -69,6 +69,9 @@ const footerQuotes = [
   '"The painter has the Universe in his mind and hands." — da Vinci',
   '"To draw, you must close your eyes and sing." — Picasso',
   '"The job of the artist is always to deepen the mystery." — Francis Bacon',
+  '"Art washes away from the soul the dust of everyday life." — Picasso',
+  '"Creativity takes courage." — Matisse',
+  '"The object of art is not to reproduce reality, but to create a reality of the same intensity." — Giacometti'
 ];
 
 // ══════════════════════════════════════
@@ -429,7 +432,7 @@ async function callGroq(systemPrompt, userPrompt) {
 // ══════════════════════════════════════
 
 async function init() {
-  console.log("Initializing Sketch v2.1...");
+  console.log("Initializing Sketch v2.3...");
   const now = new Date();
   
   const dateEl = document.getElementById('todayDate');
