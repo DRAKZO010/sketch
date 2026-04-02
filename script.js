@@ -428,18 +428,21 @@ async function callGroq(systemPrompt, userPrompt) {
 //  INIT & STREAK
 // ══════════════════════════════════════
 
-function init() {
-  console.log("Initializing Sketch v1.9...");
+async function init() {
+  console.log("Initializing Sketch v2.0...");
   const now = new Date();
   
   const dateEl = document.getElementById('todayDate');
   if (dateEl) dateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
   
   const quoteEl = document.getElementById('footerQuote');
-  if (quoteEl && footerQuotes && footerQuotes.length > 0) {
-    const randomQuote = footerQuotes[Math.floor(Math.random() * footerQuotes.length)];
-    quoteEl.textContent = randomQuote;
-    console.log("Random quote picked:", randomQuote);
+  if (quoteEl) {
+    if (apiKey || groqApiKey) {
+      fetchAIQuote();
+    } else {
+      // Fallback if no key yet
+      quoteEl.textContent = footerQuotes[Math.floor(Math.random() * footerQuotes.length)];
+    }
   }
   
   renderStreak();
@@ -453,6 +456,27 @@ function init() {
     setTimeout(() => toggleSettings(true), 1000);
   }
 }
+
+async function fetchAIQuote() {
+  const quoteEl = document.getElementById('footerQuote');
+  try {
+    const sys = "You are a poetic curator of art history. Provide a single, short, evocative quote about the soul of drawing or the beauty of creation. It can be from a famous artist or your own original thought. Format as JSON: { \"quote\": \"the quote\", \"author\": \"name\" }";
+    const user = "Give me one inspiring sentence to start my drawing session.";
+    const resp = await callAI(sys, user);
+    if (resp && resp.quote) {
+      quoteEl.style.opacity = 0;
+      setTimeout(() => {
+        quoteEl.textContent = `"${resp.quote}" — ${resp.author || 'Inspiration'}`;
+        quoteEl.style.opacity = 1;
+      }, 300);
+    }
+  } catch (e) {
+    console.error("AI Quote failed:", e);
+    // Silent fallback to array
+    quoteEl.textContent = footerQuotes[Math.floor(Math.random() * footerQuotes.length)];
+  }
+}
+
 
 
 

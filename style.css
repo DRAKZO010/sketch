@@ -1558,8 +1558,22 @@ footer {
 .footer-text {
   font-size: 0.8rem;
   color: var(--muted);
-  opacity: 0.7;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 }
+
+.version-label {
+  font-size: 0.65rem;
+  background: var(--line);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  opacity: 0.8;
+  font-family: monospace;
+  color: var(--muted);
+}
+
 
 .footer-quote {
   font-family: 'Playfair Display', serif;
@@ -1570,7 +1584,9 @@ footer {
   text-align: right;
   line-height: 1.5;
   opacity: 0.8;
+  transition: opacity 0.4s ease; /* For smooth AI quote fadeIn */
 }
+
 
 @media (max-width: 600px) {
   footer {
