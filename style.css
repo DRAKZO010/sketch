@@ -1544,29 +1544,29 @@ footer {
 }
 
 footer {
-  margin-top: 5rem;
-  padding: 3rem 0;
+  margin-top: 4rem;
+  padding: 2rem 0 3rem;
   border-top: 1px solid var(--line);
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: flex-start; /* Align to the top of the footer line for a cleaner look */
   gap: 2rem;
 }
 
 .footer-text {
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   color: var(--muted);
-  letter-spacing: 0.05em;
+  opacity: 0.7;
 }
 
 .footer-quote {
   font-family: 'Playfair Display', serif;
   font-style: italic;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   color: var(--muted);
-  max-width: 400px;
+  max-width: 500px;
   text-align: right;
-  line-height: 1.4;
+  line-height: 1.5;
   opacity: 0.8;
 }
 
@@ -1576,13 +1576,14 @@ footer {
     align-items: center;
     text-align: center;
     gap: 1.5rem;
-    padding: 2rem 0;
+    padding: 1.5rem 0;
   }
   .footer-quote {
     text-align: center;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
   }
 }
+
 
 
 
