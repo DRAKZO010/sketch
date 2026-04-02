@@ -1543,5 +1543,47 @@ footer {
   .modal-content { width: 95%; padding: 1.5rem; }
 }
 
+footer {
+  margin-top: 5rem;
+  padding: 3rem 0;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 2rem;
+}
+
+.footer-text {
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+
+.footer-quote {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--muted);
+  max-width: 400px;
+  text-align: right;
+  line-height: 1.4;
+  opacity: 0.8;
+}
+
+@media (max-width: 600px) {
+  footer {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+    padding: 2rem 0;
+  }
+  .footer-quote {
+    text-align: center;
+    font-size: 0.85rem;
+  }
+}
+
+
 
 
