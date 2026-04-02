@@ -1574,17 +1574,23 @@ footer {
 
 @media (max-width: 600px) {
   footer {
-    flex-direction: column;
+    flex-direction: column-reverse; /* Put quote above app name */
     align-items: center;
     text-align: center;
-    gap: 1.5rem;
-    padding: 1.5rem 0;
+    gap: 1.2rem;
+    padding: 2.5rem 0;
   }
   .footer-quote {
     text-align: center;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
+    max-width: 100%;
+  }
+  .footer-text {
+    font-size: 0.65rem;
+    opacity: 0.5;
   }
 }
+
 
 
 
