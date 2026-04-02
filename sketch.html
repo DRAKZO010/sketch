@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sketch — Daily Drawing Ideas</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="shell">
+
+    <header>
+      <div class="logo"><span class="logo-dot"></span>Sketch</div>
+      <div class="header-right">
+        <div class="header-meta" id="todayDate"></div>
+        <button class="btn-settings" id="openSettings" onclick="toggleSettings(true)">⚙️</button>
+      </div>
+    </header>
+
+    <div class="streak-bar">
+      <span class="streak-label">This week</span>
+      <div class="streak-dots" id="streakDots"></div>
+      <div class="streak-count" id="streakCount"></div>
+    </div>
+
+    <div class="mode-tabs">
+      <button class="tab-btn active" onclick="switchTab('generate',this)">Generate</button>
+      <button class="tab-btn" onclick="switchTab('challenge',this)">Challenge <span class="tab-badge"
+          id="challengeBadge">!</span></button>
+      <button class="tab-btn" onclick="switchTab('saved',this)">Saved</button>
+      <button class="tab-btn" onclick="switchTab('ai',this)">Ask AI</button>
+    </div>
+
+    <div class="filter-bar" id="filterBar">
+      <span class="filter-label">Theme</span>
+      <button class="filter-chip active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-chip" onclick="setFilter('nature',this)">Nature</button>
+      <button class="filter-chip" onclick="setFilter('urban',this)">Urban</button>
+      <button class="filter-chip" onclick="setFilter('portrait',this)">Portrait</button>
+      <button class="filter-chip" onclick="setFilter('abstract',this)">Abstract</button>
+      <button class="filter-chip" onclick="setFilter('still-life',this)">Still Life</button>
+      <button class="filter-chip" onclick="setFilter('emotion',this)">Emotion</button>
+    </div>
+
+    <!-- ══ GENERATE ══ -->
+    <div id="generatePanel">
+      <div class="card-area" id="cardArea">
+        <div class="idea-display" id="ideaDisplay" style="display:none;">
+          <div class="idea-number" id="ideaNumber">01</div>
+          <h1 class="idea-title" id="ideaTitle"></h1>
+          <p class="idea-tagline" id="ideaTagline"></p>
+          <div class="idea-tags" id="ideaTags"></div>
+          <div class="idea-image-wrapper" id="ideaImageWrapper">
+            <img id="ideaImage" src="" alt="Sketch Reference" onload="this.parentElement.classList.add('loaded')"
+              onerror="this.parentElement.style.display='none'" />
+          </div>
+          <div class="breakdown" id="breakdown">
+            <div class="breakdown-label">How to approach it</div>
+            <div class="breakdown-steps" id="breakdownSteps"></div>
+          </div>
+          <div class="timer-row" id="timerRow">
+            <span class="timer-label">Focus</span>
+            <div class="time-options">
+              <button class="time-opt active" onclick="setTime(5,this)">5 min</button>
+              <button class="time-opt" onclick="setTime(15,this)">15</button>
+              <button class="time-opt" onclick="setTime(30,this)">30</button>
+              <button class="time-opt" onclick="setTime(60,this)">60</button>
+            </div>
+            <div class="timer-display" id="timerDisplay">5:00</div>
+          </div>
+        </div>
+      </div>
+      <div id="emptyHint" class="empty-hint">
+        <div class="empty-hint-line"></div>
+        <div class="empty-hint-label">Your prompt will appear here</div>
+      </div>
+      <div class="action-row no-content" id="actionRow">
+        <button class="btn-main" id="generateBtn" onclick="generateIdea()"><span class="spin">✦</span> Generate</button>
+        <button class="btn-icon" id="saveBtn" onclick="saveIdea()" style="display:none;">♡</button>
+        <button class="btn-timer-toggle" id="timerToggle" onclick="toggleTimer()" style="display:none;">Start
+          timer</button>
+        <span class="gen-count" id="genCount"></span>
+      </div>
+    </div>
+
+    <!-- ══ CHALLENGE ══ -->
+    <div id="challengePanel" class="challenge-panel">
+
+      <div class="notify-banner" id="notifyBanner">
+        <div class="notify-banner-text"><strong>Get nudged, not nagged.</strong> Enable notifications and Sketch will
+          send a motivating quote when it's time to draw — on your schedule.</div>
+        <button class="btn-enable-notify" onclick="requestNotifyPermission()">Enable Notifications</button>
+      </div>
+
+      <div class="active-challenge-card" id="activeChallengeCard">
+        <div class="acc-header">
+          <div class="acc-label"><span class="acc-label-dot"></span>Active Challenge</div>
+        </div>
+        <div class="acc-title" id="accTitle"></div>
+        <div class="acc-tagline" id="accTagline"></div>
+        <div class="challenge-progress">
+          <div class="challenge-progress-fill" id="challengeProgressFill"></div>
+        </div>
+        <div class="acc-meta">
+          <span class="acc-skill" id="accSkill"></span>
+          <div class="acc-notify-status">
+            <span class="notify-dot" id="notifyDot"></span>
+            <span id="notifyStatusText">Reminders off</span>
+          </div>
+        </div>
+        <div class="acc-actions">
+          <button class="btn-complete" onclick="completeChallenge()">✓ Mark Complete</button>
+          <button class="btn-abandon" onclick="abandonChallenge()">Abandon</button>
+          <button class="btn-notify-toggle" id="notifyToggleBtn" onclick="toggleChallengeNotify()">🔔 Remind me</button>
+        </div>
+      </div>
+
+      <div id="challengeLibrarySection">
+        <div class="challenge-section-title" id="challengeLibTitle">Pick a challenge and commit — it resets when you
+          complete it</div>
+        <div class="challenge-grid" id="challengeGrid"></div>
+      </div>
+
+      <div class="completed-section" id="completedSection" style="display:none;">
+        <div class="challenge-section-title">Completed</div>
+        <div id="completedList"></div>
+      </div>
+    </div>
+
+    <!-- ══ SAVED ══ -->
+    <div id="savedPanel" class="saved-panel">
+      <div class="saved-panel-title">Saved Ideas</div>
+      <div id="savedList"></div>
+    </div>
+
+    <!-- ══ AI ══ -->
+    <div id="aiPanel" class="ai-panel">
+      <div style="margin-bottom:1.2rem;">
+        <p style="font-size:0.88rem;color:var(--muted);line-height:1.7;">Tell the AI what you're feeling, what materials
+          you have, or what mood you're in — it'll craft a custom sketch prompt just for you.</p>
+      </div>
+      <div class="ai-prompt-area">
+        <input class="ai-input" id="aiInput" type="text" placeholder="e.g. I have charcoal and feel melancholy today…"
+          onkeydown="if(event.key==='Enter')askAI()">
+        <button class="btn-main" id="aiBtn" onclick="askAI()"><span class="spin">✦</span> Ask</button>
+      </div>
+      <div class="ai-thinking" id="aiThinking">
+        <div class="dot-pulse"><span></span><span></span><span></span></div> Crafting your prompt…
+      </div>
+      <div class="ai-result" id="aiResult"></div>
+    </div>
+
+    <footer>
+      <div class="footer-text">Sketch — Daily Drawing Ideas</div>
+      <div class="footer-quote" id="footerQuote"></div>
+    </footer>
+  </div>
+
+  <!-- Celebration -->
+  <div class="celebration-overlay" id="celebrationOverlay">
+    <div class="celebration-icon">✦</div>
+    <div class="celebration-title" id="celebrationTitle"></div>
+    <div class="celebration-sub" id="celebrationSub"></div>
+    <div class="celebration-quote" id="celebrationQuote"></div>
+    <button class="btn-celebration-close" onclick="closeCelebration()">Pick a new challenge →</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Settings</h2>
+        <button class="modal-close" onclick="toggleSettings(false)">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="provider-toggle">
+          <div class="provider-pill active" id="pillGemini" onclick="setProvider('gemini')">Gemini</div>
+          <div class="provider-pill" id="pillGroq" onclick="setProvider('groq')">Groq (Fast)</div>
+        </div>
+
+        <div id="geminiSettings" class="settings-group">
+          <label class="settings-label">Gemini API Key</label>
+          <p class="settings-hint">Google AI Studio key for standard generation.</p>
+          <input class="ai-input" id="apiKeyInput" type="password" placeholder="AI Studio Key...">
+        </div>
+
+        <div id="groqSettings" class="settings-group" style="display:none;">
+          <label class="settings-label">Groq API Key</label>
+          <p class="settings-hint">Fast free alternative using Llama 3 models.</p>
+          <input class="ai-input" id="groqApiKeyInput" type="password" placeholder="Groq API Key...">
+        </div>
+        <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+          <button class="btn-main btn-validate" onclick="validateApiKey()"
+            style="flex:1; justify-content:center; background:var(--paper); color:var(--ink); border:1px solid var(--line);">Test
+            Key</button>
+          <button class="btn-main" onclick="saveSettings()" style="flex:2; justify-content:center;">Save &
+            Close</button>
+        </div>
+        <div class="debug-log" id="debugLog">
+          <div class="debug-log-title">Technical Details</div>
+          <div class="debug-log-content" id="debugLogContent">No errors logged.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
