@@ -429,7 +429,7 @@ async function callGroq(systemPrompt, userPrompt) {
 // ══════════════════════════════════════
 
 function init() {
-  console.log("Initializing Sketch...");
+  console.log("Initializing Sketch v1.9...");
   const now = new Date();
   
   const dateEl = document.getElementById('todayDate');
@@ -439,7 +439,7 @@ function init() {
   if (quoteEl && footerQuotes && footerQuotes.length > 0) {
     const randomQuote = footerQuotes[Math.floor(Math.random() * footerQuotes.length)];
     quoteEl.textContent = randomQuote;
-    console.log("Quote set:", randomQuote);
+    console.log("Random quote picked:", randomQuote);
   }
   
   renderStreak();
@@ -454,12 +454,6 @@ function init() {
   }
 }
 
-// Ensure init runs after DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
 
 
 function renderStreak() {
@@ -902,4 +896,5 @@ async function askAI() {
   }
 }
 
-// Removed standalone init call to prevent double initialization with DOMContentLoaded
+// Initialize on load
+init();
