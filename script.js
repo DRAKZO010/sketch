@@ -254,7 +254,8 @@ async function loginWithGoogle() {
     showToast(`Welcome, ${result.user.displayName}!`);
   } catch (error) {
     console.error("Login Error:", error);
-    showToast("Login failed. Check your internet.");
+    // Show detailed error for debugging
+    showToast(`Login failed: ${error.message}`);
   }
 }
 
