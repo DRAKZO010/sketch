@@ -429,7 +429,7 @@ async function callGroq(systemPrompt, userPrompt) {
 // ══════════════════════════════════════
 
 async function init() {
-  console.log("Initializing Sketch v2.0...");
+  console.log("Initializing Sketch v2.1...");
   const now = new Date();
   
   const dateEl = document.getElementById('todayDate');
@@ -437,11 +437,12 @@ async function init() {
   
   const quoteEl = document.getElementById('footerQuote');
   if (quoteEl) {
+    // 🎨 Immediate quote on load (Zero waiting)
+    quoteEl.textContent = footerQuotes[Math.floor(Math.random() * footerQuotes.length)];
+    
+    // 🧠 Background upgrade to AI quote if possible
     if (apiKey || groqApiKey) {
-      fetchAIQuote();
-    } else {
-      // Fallback if no key yet
-      quoteEl.textContent = footerQuotes[Math.floor(Math.random() * footerQuotes.length)];
+      setTimeout(() => fetchAIQuote(), 100); 
     }
   }
   
@@ -456,6 +457,7 @@ async function init() {
     setTimeout(() => toggleSettings(true), 1000);
   }
 }
+
 
 async function fetchAIQuote() {
   const quoteEl = document.getElementById('footerQuote');
@@ -742,7 +744,7 @@ function renderChallengePanel() {
 
 function renderChallengeGrid() {
   const grid = document.getElementById('challengeGrid');
-  grid.innerHTML = challenges.map(ch => {
+    grid.innerHTML = challenges.map(ch => {
     const isActive = activeChallenge && activeChallenge.id === ch.id;
     const isDone = completedChallenges.some(c => c.id === ch.id);
     const clickable = !isActive && !isDone;
