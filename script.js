@@ -70,9 +70,20 @@ const footerQuotes = [
   '"To draw, you must close your eyes and sing." — Picasso',
   '"The job of the artist is always to deepen the mystery." — Francis Bacon',
   '"Art washes away from the soul the dust of everyday life." — Picasso',
-  '"Creativity takes courage." — Matisse',
-  '"The object of art is not to reproduce reality, but to create a reality of the same intensity." — Giacometti'
 ];
+
+// 🚀 Instant Randomization (Even before DOMContentLoaded if possible)
+const randomizeQuote = () => {
+  const el = document.getElementById('footerQuote');
+  if (el) {
+    const q = footerQuotes[Math.floor(Math.random() * footerQuotes.length)];
+    el.textContent = q;
+    console.log("v2.5 Quote Selected:", q);
+  }
+};
+randomizeQuote(); // Global call
+setTimeout(randomizeQuote, 10); // Redundant backup
+window.addEventListener('load', randomizeQuote); // Late backup
 
 // ══════════════════════════════════════
 //  GEMINI API UTILITY
@@ -432,25 +443,22 @@ async function callGroq(systemPrompt, userPrompt) {
 // ══════════════════════════════════════
 
 async function init() {
-  console.log("Initializing Sketch v2.3...");
+  console.log("Initializing Sketch v2.5 (Core)...");
   const now = new Date();
   
   const dateEl = document.getElementById('todayDate');
   if (dateEl) dateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
   
-  const quoteEl = document.getElementById('footerQuote');
-  if (quoteEl) {
-    // 🎨 Immediate quote on load (Zero waiting)
-    quoteEl.textContent = footerQuotes[Math.floor(Math.random() * footerQuotes.length)];
-    
-    // 🧠 Background upgrade to AI quote if possible
-    if (apiKey || groqApiKey) {
-      setTimeout(() => fetchAIQuote(), 100); 
-    }
+  // 🧠 Background upgrade to AI quote if possible
+  if (apiKey || groqApiKey) {
+    setTimeout(() => fetchAIQuote(), 200); 
+  } else {
+    document.getElementById('footerQuote').textContent = footerQuotes[Math.floor(Math.random() * footerQuotes.length)];
   }
   
   renderStreak();
   renderChallengeBadge();
+
   
   if (activeChallenge && challengeNotifyEnabled && Notification.permission === 'granted') {
     scheduleNotifications();
