@@ -47,13 +47,22 @@ body::before {
   padding: 0 2rem;
 }
 
+@media (max-width: 600px) {
+  .shell { padding: 0 1rem; }
+}
+
 header {
   padding: 3rem 0 2rem;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--line);
 }
+
+@media (max-width: 600px) {
+  header { padding: 1.5rem 0 1.2rem; }
+}
+
 
 .logo {
   font-family: 'Playfair Display', serif;
@@ -72,12 +81,16 @@ header {
   display: inline-block;
 }
 
-.header-meta {
-  font-size: 0.75rem;
-  color: var(--muted);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.header-right { 
+  display: flex; 
+  align-items: center; 
+  gap: 1.2rem; 
 }
+@media (max-width: 480px) {
+  .header-right { gap: 0.8rem; }
+  .header-meta { display: none; } /* Hide date on very small phones to save space */
+}
+
 
 .streak-bar {
   padding: 1.2rem 0;
@@ -192,32 +205,38 @@ header {
 
 .filter-bar {
   padding: 1.5rem 0;
-  border-bottom: 1px solid var(--line);
   display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
   align-items: center;
+  gap: 0.6rem;
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Hide scrollbar for clean look */
 }
+.filter-bar::-webkit-scrollbar { display: none; }
 
 .filter-label {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   color: var(--muted);
   margin-right: 0.5rem;
+  flex-shrink: 0;
 }
 
 .filter-chip {
-  background: none;
+  background: var(--paper);
   border: 1px solid var(--line);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.72rem;
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
-  cursor: pointer;
   color: var(--muted);
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  cursor: pointer;
   transition: all 0.2s;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
+
 
 .filter-chip:hover {
   border-color: var(--ink);
