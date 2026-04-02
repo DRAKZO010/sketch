@@ -18,6 +18,12 @@
       <div class="logo"><span class="logo-dot"></span>Sketch</div>
       <div class="header-right">
         <div class="header-meta" id="todayDate"></div>
+        <div id="userAuth">
+          <button class="btn-login" id="btnLogin" onclick="loginWithGoogle()">
+            <img src="https://www.google.com/favicon.ico" alt="Google">
+            Login
+          </button>
+        </div>
         <button class="btn-settings" id="openSettings" onclick="toggleSettings(true)">⚙️</button>
       </div>
     </header>
@@ -211,7 +217,7 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 
 </html>

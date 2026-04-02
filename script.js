@@ -1,4 +1,24 @@
-// ══════════════════════════════════════
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCfvjCTLW8Fw0tv4KvTSHGLIAmsmLWZJbE",
+  authDomain: "sketch-ai-5bee5.firebaseapp.com",
+  projectId: "sketch-ai-5bee5",
+  storageBucket: "sketch-ai-5bee5.firebasestorage.app",
+  messagingSenderId: "854561021608",
+  appId: "1:854561021608:web:d7f031013eb20de406ec9d"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+let currentUser = null;
+let isSyncing = false;
+
 //  DATA & STATE
 // ══════════════════════════════════════
 
@@ -196,9 +216,156 @@ function saveSettings() {
   localStorage.setItem('sketch_groq_api_key', groqApiKey);
   localStorage.setItem('sketch_provider', selectedProvider);
   
+  syncToCloud();
   toggleSettings(false);
   showToast('Settings saved ✓');
 }
+
+// ══════════════════════════════════════
+//  FIREBASE AUTH & SYNC
+// ══════════════════════════════════════
+
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  const authContainer = document.getElementById('userAuth');
+  if (user) {
+    // Logged In
+    authContainer.innerHTML = `
+      <div class="user-profile" onclick="logout()">
+        <img class="user-avatar" src="${user.photoURL}" alt="${user.displayName}" title="Click to logout">
+        <span class="sync-status synced" id="syncIndicator"></span>
+      </div>
+    `;
+    await loadFromCloud();
+  } else {
+    // Logged Out
+    authContainer.innerHTML = `
+      <button class="btn-login" id="btnLogin" onclick="loginWithGoogle()">
+        <img src="https://www.google.com/favicon.ico" alt="Google">
+        Login
+      </button>
+    `;
+  }
+});
+
+async function loginWithGoogle() {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    showToast(`Welcome, ${result.user.displayName}!`);
+  } catch (error) {
+    console.error("Login Error:", error);
+    showToast("Login failed. Check your internet.");
+  }
+}
+
+async function logout() {
+  if (confirm("Logout from Sketch? Your data will remain on this device.")) {
+    await signOut(auth);
+    showToast("Logged out");
+    location.reload(); // Refresh to clean state
+  }
+}
+
+async function syncToCloud() {
+  if (!currentUser) return;
+  
+  const indicator = document.getElementById('syncIndicator');
+  if (indicator) {
+    indicator.classList.remove('synced');
+    indicator.classList.add('saving');
+  }
+
+  try {
+    const data = {
+      apiKeys: { gemini: apiKey, groq: groqApiKey, provider: selectedProvider },
+      challenges,
+      savedIdeas,
+      activeChallenge,
+      completedChallenges,
+      streak,
+      lastUpdated: new Date().toISOString()
+    };
+    
+    await setDoc(doc(db, "users", currentUser.uid), data, { merge: true });
+    
+    if (indicator) {
+      indicator.classList.remove('saving');
+      indicator.classList.add('synced');
+    }
+  } catch (error) {
+    console.error("Sync Error:", error);
+    // Silent fail if Firestore isn't setup yet
+  }
+}
+
+async function loadFromCloud() {
+  if (!currentUser || isSyncing) return;
+  isSyncing = true;
+
+  try {
+    const docRef = doc(db, "users", currentUser.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const cloudData = docSnap.data();
+      
+      // Merge logic: Simple overwrite local with cloud for this version
+      if (cloudData.apiKeys) {
+        apiKey = cloudData.apiKeys.gemini || apiKey;
+        groqApiKey = cloudData.apiKeys.groq || groqApiKey;
+        selectedProvider = cloudData.apiKeys.provider || selectedProvider;
+      }
+      
+      challenges = cloudData.challenges || challenges;
+      savedIdeas = cloudData.savedIdeas || savedIdeas;
+      activeChallenge = cloudData.activeChallenge || activeChallenge;
+      completedChallenges = cloudData.completedChallenges || completedChallenges;
+      streak = cloudData.streak || streak;
+
+      // Update LocalStorage to match cloud
+      localStorage.setItem('sketch_gemini_api_key', apiKey);
+      localStorage.setItem('sketch_groq_api_key', groqApiKey);
+      localStorage.setItem('sketch_provider', selectedProvider);
+      localStorage.setItem('sketch_challenges', JSON.stringify(challenges));
+      localStorage.setItem('sketch_saved', JSON.stringify(savedIdeas));
+      activeChallenge = null;
+      localStorage.setItem('sketch_active_challenge', 'null');
+      localStorage.setItem('sketch_completed_challenges', JSON.stringify(completedChallenges));
+      syncToCloud();
+      updateChallengeGrid();
+      localStorage.setItem('sketch_streak', JSON.stringify(streak));
+
+      // Refresh UI (Optional: selectively refresh if needed)
+      init(); 
+      updateSavedGrid();
+      updateChallengeGrid();
+      updateGenCount();
+    }
+  } catch (error) {
+    console.error("Load Error:", error);
+  } finally {
+    isSyncing = false;
+  }
+}
+
+// Expose functions to window for HTML onclick attributes
+window.loginWithGoogle = loginWithGoogle;
+window.logout = logout;
+window.toggleSettings = toggleSettings;
+window.setProvider = setProvider;
+window.saveSettings = saveSettings;
+window.validateApiKey = validateApiKey;
+window.generateIdea = generateIdea;
+window.saveIdea = saveIdea;
+window.removeSavedIdea = removeSavedIdea;
+window.setFilter = setFilter;
+window.commitChallenge = commitChallenge;
+window.abandonChallenge = abandonChallenge;
+window.completeChallenge = completeChallenge;
+window.toggleChallengeNotify = toggleChallengeNotify;
+window.closeCelebration = closeCelebration;
+window.generateAIPrompt = generateAIPrompt;
+
 
 // ══════════════════════════════════════
 //  AI DISPATCHER
@@ -410,7 +577,10 @@ function saveIdea() {
     btn.textContent = '♡'; btn.classList.remove('saved'); showToast('Removed from saved');
   } else {
     savedIdeas.unshift({ ...currentIdea, savedAt: new Date().toISOString() });
-    btn.textContent = '♥'; btn.classList.add('saved'); showToast('Saved ✓');
+    savedIdeas.push({ ...pick, id: 'i_' + Date.now(), date: new Date().toLocaleDateString() });
+    localStorage.setItem('sketch_saved', JSON.stringify(savedIdeas));
+    syncToCloud();
+    showToast("Idea saved to your collection! ✓");
   }
   localStorage.setItem('sketch_saved', JSON.stringify(savedIdeas));
 }
@@ -469,7 +639,14 @@ function loadSaved(idx) {
   }, 50);
 }
 
-function removeSaved(idx) { savedIdeas.splice(idx, 1); localStorage.setItem('sketch_saved', JSON.stringify(savedIdeas)); renderSaved(); showToast('Removed'); }
+function removeSavedIdea(id) {
+  savedIdeas = savedIdeas.filter(i => i.id !== id);
+  localStorage.setItem('sketch_saved', JSON.stringify(savedIdeas));
+  syncToCloud();
+  updateSavedGrid();
+  showToast("Idea removed");
+}
+
 
 function setTime(mins, btn) {
   document.querySelectorAll('.time-opt').forEach(b => b.classList.remove('active'));
