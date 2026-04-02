@@ -61,9 +61,12 @@ header {
 
 @media (max-width: 600px) {
   header { 
-    padding: 1.5rem 0 1.2rem; 
-    flex-direction: row !important; /* Force horizontal layout */
+    padding: 1rem 0; /* Tighter padding for mobile */
+    display: flex !important;
+    flex-direction: row !important;
     flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
   }
 }
 
@@ -90,9 +93,15 @@ header {
   align-items: center; 
   gap: 1.2rem; 
 }
+@media (max-width: 600px) {
+  .header-right { 
+    margin-left: auto; /* Push to the right */
+    gap: 0.8rem; /* Tighter gap on mobile */
+  }
+}
 @media (max-width: 480px) {
-  .header-right { gap: 0.8rem; }
-  .header-meta { display: none; } /* Hide date on very small phones to save space */
+  .header-meta { display: none !important; } /* Hide date to save space */
+  .logo { font-size: 1rem; } /* Slightly smaller logo */
 }
 
 
