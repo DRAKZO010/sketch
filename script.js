@@ -254,8 +254,9 @@ async function loginWithGoogle() {
     showToast(`Welcome, ${result.user.displayName}!`);
   } catch (error) {
     console.error("Login Error:", error);
+    console.log("Current Domain:", window.location.hostname);
     // Show detailed error for debugging
-    showToast(`Login failed: ${error.message}`);
+    showToast(`Login failed: ${error.message} (Domain: ${window.location.hostname})`);
   }
 }
 
